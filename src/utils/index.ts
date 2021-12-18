@@ -1,4 +1,3 @@
-export * from './defaultData';
 export * from './omitObjProperty';
 export * from './getInitials';
 export * from './formatters/formatDate';

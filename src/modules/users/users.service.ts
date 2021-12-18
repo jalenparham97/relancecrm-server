@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { SubscriptionData } from 'src/payments/payments.types';
+import { SubscriptionData } from 'src/modules/payments/payments.types';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './models/user.model';
@@ -66,21 +66,7 @@ export class UsersService {
           'subscription.isInTrial': subscription.isInTrial,
           'subscription.plan': subscription.plan,
         },
-        { new: true }
-      )
-      .exec();
-  }
-
-  async updateIntegration(id: string, updateUserDto: UpdateUserDto) {
-    const { authId, isConnected, name } = updateUserDto.integration;
-    const integration = `integrations.${name}`;
-    return await this.userModel
-      .findByIdAndUpdate(
-        id,
-        {
-          $set: { [integration]: { authId, isConnected } },
-        },
-        { new: true }
+        { new: true },
       )
       .exec();
   }

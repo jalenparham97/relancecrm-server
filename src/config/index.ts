@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { SubscriptionPlan } from 'src/payments/payments.types';
+import { SubscriptionPlan } from 'src/modules/payments/payments.types';
 
 dotenv.config();
 

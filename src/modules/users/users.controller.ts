@@ -35,14 +35,6 @@ export class UsersController {
     return await this.usersService.update(id, updateUserDto);
   }
 
-  @Patch(':id/integrations')
-  async updateIntegration(
-    @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto
-  ) {
-    return await this.usersService.updateIntegration(id, updateUserDto);
-  }
-
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return await this.usersService.remove(id);

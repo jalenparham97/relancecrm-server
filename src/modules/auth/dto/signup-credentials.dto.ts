@@ -1,7 +1,7 @@
 import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
-import { SubscriptionData } from 'src/payments/payments.types';
+import { SubscriptionPlan } from 'src/modules/payments/payments.types';
 
-export class CreateUserDto {
+export class SignupCredentialsDto {
   @IsNotEmpty({ message: 'First name is required.' })
   firstName: string;
 
@@ -19,5 +19,5 @@ export class CreateUserDto {
   photoUrl: string;
 
   @IsOptional()
-  subscription?: SubscriptionData;
+  plan: SubscriptionPlan;
 }
