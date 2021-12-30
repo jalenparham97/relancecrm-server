@@ -7,13 +7,18 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { config } from 'src/config';
 import { EmailService } from 'src/modules/email/email.service';
 import { MailOptions } from 'src/modules/email/email.types';
 import { ServiceResponse } from 'src/types';
 import { User } from 'src/modules/users/models/user.model';
-import { formatDate, formatCurrency, omitObjProperty } from 'src/utils';
+import {
+  formatDate,
+  formatCurrency,
+  omitObjProperty,
+  getDocumentsCount,
+} from 'src/utils';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { EmailInvoiceDto } from './dto/email-invoice.dto';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto';
@@ -39,12 +44,17 @@ export class InvoicesService {
   }
 
   async findAll(user: User) {
+    const query: FilterQuery<Invoice> = { userId: user._id };
+
     const data = await this.invoiceModel
-      .find({ userId: user._id })
+      .find(query)
       .sort({ createdAt: 'desc' })
       .select('_id invoiceNumber toName issuedOn dueOn total status')
+      .limit(20)
       .lean()
       .exec();
+
+    const count = await getDocumentsCount(query, this.invoiceModel);
 
     const transformedData = data.map((invoice) => {
       if (dayjs().isAfter(invoice.dueOn)) {
@@ -57,7 +67,10 @@ export class InvoicesService {
       }
       return { ...invoice };
     });
-    return { total: data.length, data: transformedData };
+    return {
+      total: count,
+      data: transformedData,
+    };
   }
 
   async findAllClientInvoices(
@@ -65,11 +78,19 @@ export class InvoicesService {
     user: User,
   ): Promise<ServiceResponse<Invoice>> {
     try {
+      const query: FilterQuery<Invoice> = {
+        userId: user._id,
+        client: clientId,
+      };
+
       const data = await this.invoiceModel
-        .find({ userId: user._id, client: clientId })
+        .find(query)
         .sort({ createdAt: 'desc' })
         .exec();
-      return { total: data.length, data };
+
+      const count = await getDocumentsCount(query, this.invoiceModel);
+
+      return { total: count, data };
     } catch (error) {
       console.log(error);
     }
@@ -97,7 +118,6 @@ export class InvoicesService {
         userId: user._id,
       })
       .populate('client')
-      .populate('project')
       .populate('recipients')
       .exec();
 
