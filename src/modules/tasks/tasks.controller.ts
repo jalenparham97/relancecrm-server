@@ -8,7 +8,6 @@ import {
   Delete,
   UseGuards,
   Query,
-  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { TasksService } from './tasks.service';
@@ -17,8 +16,6 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { User } from 'src/modules/users/models/user.model';
 import { GetUser } from 'src/decorators';
 import { FilterQuery } from 'mongoose';
-import { PaginationParams, ServiceResponse } from 'src/types';
-import { Task } from './models/task.model';
 
 @Controller('tasks')
 @UseGuards(AuthGuard())
@@ -34,12 +31,9 @@ export class TasksController {
   async findAll(
     @GetUser() user: User,
     // @Query('filter') filter: string,
-    @Query() paginationParams: PaginationParams,
   ) {
-    console.log({ paginationParams });
-
     // const filterQuery = JSON.parse(filter) as FilterQuery<Task>;
-    return await this.tasksService.findAll(user, {}, paginationParams);
+    return await this.tasksService.findAll(user, {});
   }
 
   @Get('client')

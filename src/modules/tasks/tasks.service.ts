@@ -5,7 +5,7 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { User } from 'src/modules/users/models/user.model';
 import { Task, TaskModel } from './models/task.model';
-import { PaginationParams, ServiceResponse } from 'src/types';
+import { ServiceResponse } from 'src/types';
 import { getDocumentsCount } from 'src/utils';
 
 @Injectable()
@@ -19,36 +19,23 @@ export class TasksService {
   async findAll(
     user: User,
     filter?: FilterQuery<Task>,
-    paginationParams?: PaginationParams,
   ): Promise<ServiceResponse<Task>> {
-    let paginationQuery: FilterQuery<TaskModel> = {};
-
     const baseQuery: FilterQuery<Task> = {
       userId: user._id,
     };
 
-    if (paginationParams?.startId) {
-      paginationQuery = {
-        _id: {
-          $lt: paginationParams?.startId,
-        },
-      };
-    }
-    console.log({ paginationParams, paginationQuery });
-
     const data = await this.tasksModel
       .find({
         ...baseQuery,
-        ...paginationQuery,
+        ...filter,
       })
       .sort({ _id: -1 })
-      .limit(Number(paginationParams?.limit || 13))
-      .lean()
+      .populate('project')
       .exec();
 
     const count = await getDocumentsCount(baseQuery, this.tasksModel);
 
-    return { total: count, data, nextId: data[data.length - 1]?._id || '' };
+    return { total: count, data };
   }
 
   async findAllClientTasks(
@@ -74,6 +61,7 @@ export class TasksService {
     const data = await this.tasksModel
       .find({ userId: user._id, project: projectId })
       .sort({ createdAt: 'desc' })
+      .populate('project')
       .exec();
 
     return { total: data.length, data };

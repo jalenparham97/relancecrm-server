@@ -10,6 +10,7 @@ import { FirebaseAdminModule } from './modules/firebase/admin/firebase-admin.mod
 import { FirebaseAdminProvider } from './modules/firebase/admin/firebase-admin.provider';
 import { InvoicesModule } from './modules/invoices/invoices.module';
 import { PaymentsModule } from './modules/payments/payments.module';
+import { ProjectsModule } from './modules/projects/projects.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { UsersModule } from './modules/users/users.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
@@ -21,7 +22,7 @@ import { WebhooksModule } from './modules/webhooks/webhooks.module';
     AuthModule,
     UsersModule,
     ClientsModule,
-    // ProjectsModule,
+    ProjectsModule,
     TasksModule,
     InvoicesModule,
     PaymentsModule,

@@ -118,6 +118,7 @@ export class InvoicesService {
         userId: user._id,
       })
       .populate('client')
+      .populate('project')
       .populate('recipients')
       .exec();
 
